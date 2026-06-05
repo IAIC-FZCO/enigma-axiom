@@ -110,7 +110,7 @@ function ensureMemoryButton(): HTMLButtonElement {
   btn.className = "enigma-mem-fab";
   btn.type = "button";
   btn.title = "Insert your ENIGMA Memory (verified context) into this prompt";
-  btn.textContent = "🧠 ENIGMA Memory";
+  btn.textContent = "🧠 Memory";
   btn.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
