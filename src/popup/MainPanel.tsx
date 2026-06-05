@@ -13,7 +13,7 @@
 import React from "react";
 
 import { loadSettings, saveSettings } from "../storage";
-import { GoalsPanel } from "./GoalsPanel";
+import { HostedGoals } from "./HostedGoals";
 import type {
   ExtensionSettings,
   MemoryItem,
@@ -371,7 +371,7 @@ export function MainPanel({ settings, onSettingsChange }: Props) {
         )}
       </section>
 
-      <GoalsPanel settings={settings} />
+      <HostedGoals settings={settings} />
 
       <footer className="pt-2 border-t border-gray-200 text-xs text-gray-500 space-y-1">
         <p>

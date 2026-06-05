@@ -58,7 +58,7 @@
     "https://chat.deepseek.com/*"
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.enigma.ist https://enigma.ist;"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.enigma.ist https://enigma.ist; frame-src https://axiom.enigma.ist;"
   },
   "web_accessible_resources": [
     {
