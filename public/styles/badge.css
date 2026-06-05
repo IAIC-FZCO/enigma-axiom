@@ -925,23 +925,57 @@
   right: 0;
   top: 60%;
   z-index: 2147483000;
+  display: flex;
+  align-items: stretch;
   background: #7c6fe0;
   color: #fff;
-  border: none;
   border-radius: 999px 0 0 999px;
-  padding: 7px 12px 7px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: "DM Sans", system-ui, -apple-system, sans-serif;
   box-shadow: -2px 4px 16px rgba(124, 111, 224, 0.4);
-  opacity: 0.9;
+  font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+  opacity: 0.92;
+  user-select: none;
+  touch-action: none;
+}
+.enigma-mem-fab.moved {
+  border-radius: 999px;
 }
 .enigma-mem-fab:hover {
-  background: #a78bfa;
   opacity: 1;
 }
-.enigma-mem-fab:disabled {
+.enigma-mem-action,
+.enigma-mem-toggle {
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+.enigma-mem-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 6px 7px 14px;
+  border-radius: 999px 0 0 999px;
+}
+.enigma-mem-toggle {
+  padding: 7px 11px 7px 7px;
+  font-size: 15px;
+  line-height: 1;
+  opacity: 0.85;
+  border-radius: 0 999px 999px 0;
+}
+.enigma-mem-toggle:hover {
+  opacity: 1;
+}
+.enigma-mem-fab.collapsed .enigma-mem-label {
+  display: none;
+}
+.enigma-mem-fab.collapsed .enigma-mem-action {
+  padding: 7px 2px 7px 12px;
+}
+.enigma-mem-action:disabled {
   opacity: 0.6;
   cursor: default;
 }

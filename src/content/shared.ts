@@ -102,22 +102,100 @@ function getMemoryContext(): Promise<string> {
   });
 }
 
-let memoryBtn: HTMLButtonElement | null = null;
+let memoryBtn: HTMLDivElement | null = null;
+// True for the click that immediately follows a drag, so the drag doesn't also
+// trigger the button's action.
+let memDragged = false;
+const MEM_FAB_KEY = "enigmaMemFab";
 
-function ensureMemoryButton(): HTMLButtonElement {
+function memSaveState(fab: HTMLElement, collapsed: boolean): void {
+  try {
+    const r = fab.getBoundingClientRect();
+    chrome.storage?.local.set({
+      [MEM_FAB_KEY]: {
+        left: r.left,
+        top: r.top,
+        moved: fab.classList.contains("moved"),
+        collapsed,
+      },
+    });
+  } catch {
+    /* storage is best-effort */
+  }
+}
+
+// Drag the whole pill anywhere on screen; a < 5px move counts as a click, not a drag.
+function memMakeDraggable(fab: HTMLElement): void {
+  let sx = 0,
+    sy = 0,
+    ox = 0,
+    oy = 0,
+    dragging = false;
+  fab.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0) return;
+    const r = fab.getBoundingClientRect();
+    ox = r.left;
+    oy = r.top;
+    sx = e.clientX;
+    sy = e.clientY;
+    dragging = true;
+    memDragged = false;
+    try {
+      fab.setPointerCapture(e.pointerId);
+    } catch {
+      /* ignore */
+    }
+  });
+  fab.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - sx;
+    const dy = e.clientY - sy;
+    if (!memDragged && Math.hypot(dx, dy) < 5) return;
+    memDragged = true;
+    fab.classList.add("moved");
+    const left = Math.max(0, Math.min(window.innerWidth - fab.offsetWidth, ox + dx));
+    const top = Math.max(0, Math.min(window.innerHeight - fab.offsetHeight, oy + dy));
+    fab.style.left = `${left}px`;
+    fab.style.top = `${top}px`;
+    fab.style.right = "auto";
+    fab.style.transform = "none";
+  });
+  const end = (e: PointerEvent): void => {
+    if (!dragging) return;
+    dragging = false;
+    try {
+      fab.releasePointerCapture(e.pointerId);
+    } catch {
+      /* ignore */
+    }
+    if (memDragged) memSaveState(fab, fab.classList.contains("collapsed"));
+  };
+  fab.addEventListener("pointerup", end);
+  fab.addEventListener("pointercancel", end);
+}
+
+function ensureMemoryButton(): HTMLDivElement {
   if (memoryBtn && document.body.contains(memoryBtn)) return memoryBtn;
-  const btn = document.createElement("button");
-  btn.className = "enigma-mem-fab";
-  btn.type = "button";
-  btn.title = "Insert your ENIGMA Memory (verified context) into this prompt";
-  btn.textContent = "🧠 Memory";
-  btn.addEventListener("click", (e) => {
+  const fab = document.createElement("div");
+  fab.className = "enigma-mem-fab";
+
+  const action = document.createElement("button");
+  action.type = "button";
+  action.className = "enigma-mem-action";
+  action.title = "Insert your ENIGMA Memory (verified context) into this prompt";
+  action.innerHTML =
+    '<span class="enigma-mem-ico">🧠</span><span class="enigma-mem-label">Memory</span>';
+  action.addEventListener("click", (e) => {
+    if (memDragged) {
+      memDragged = false;
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     void (async () => {
-      btn.disabled = true;
+      action.disabled = true;
       const ctx = await getMemoryContext();
-      btn.disabled = false;
+      action.disabled = false;
       if (!ctx) {
         memToast("Your ENIGMA Memory is empty — verify some sources first.");
         return;
@@ -130,9 +208,57 @@ function ensureMemoryButton(): HTMLButtonElement {
       }
     })();
   });
-  document.body.appendChild(btn);
-  memoryBtn = btn;
-  return btn;
+
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "enigma-mem-toggle";
+  toggle.title = "Collapse / expand";
+  toggle.textContent = "‹";
+  toggle.addEventListener("click", (e) => {
+    if (memDragged) {
+      memDragged = false;
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = !fab.classList.contains("collapsed");
+    fab.classList.toggle("collapsed", collapsed);
+    toggle.textContent = collapsed ? "›" : "‹";
+    memSaveState(fab, collapsed);
+  });
+
+  fab.appendChild(action);
+  fab.appendChild(toggle);
+  document.body.appendChild(fab);
+  memoryBtn = fab;
+  memMakeDraggable(fab);
+
+  // Restore saved position + collapsed state.
+  try {
+    chrome.storage?.local.get(MEM_FAB_KEY, (r) => {
+      const st = r?.[MEM_FAB_KEY] as
+        | { left?: number; top?: number; moved?: boolean; collapsed?: boolean }
+        | undefined;
+      if (!st) return;
+      if (st.moved && typeof st.left === "number" && typeof st.top === "number") {
+        const left = Math.max(0, Math.min(window.innerWidth - 60, st.left));
+        const top = Math.max(0, Math.min(window.innerHeight - 40, st.top));
+        fab.classList.add("moved");
+        fab.style.left = `${left}px`;
+        fab.style.top = `${top}px`;
+        fab.style.right = "auto";
+        fab.style.transform = "none";
+      }
+      if (st.collapsed) {
+        fab.classList.add("collapsed");
+        toggle.textContent = "›";
+      }
+    });
+  } catch {
+    /* best-effort */
+  }
+
+  return fab;
 }
 
 function updateMemoryButton(s: ExtensionSettings): void {
