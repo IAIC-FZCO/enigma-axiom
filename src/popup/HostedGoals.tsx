@@ -6,6 +6,12 @@
  *
  * This is the hosted-UI shell: the goal engine lives on the web and can be
  * updated without a Chrome Web Store re-review.
+ *
+ * Token handover is handshake-driven: we ONLY ever postMessage to the window we
+ * captured from the app's own ENIGMA_APP_READY message. That window is
+ * definitively at APP_ORIGIN. Posting to iframe.contentWindow before it has
+ * navigated to axiom (on mount / onLoad of about:blank) throws
+ * "target origin does not match the recipient window's origin", so we never do.
  */
 
 import React from "react";
@@ -16,26 +22,25 @@ const APP_ORIGIN = "https://axiom.enigma.ist";
 const APP_URL = `${APP_ORIGIN}/app/?ctx=ext`;
 
 export function HostedGoals({ settings }: { settings: ExtensionSettings }) {
-  const ref = React.useRef<HTMLIFrameElement>(null);
+  // The app's own window, captured from its ENIGMA_APP_READY handshake. Only
+  // this window is guaranteed to be at APP_ORIGIN.
+  const appWindowRef = React.useRef<Window | null>(null);
+
+  const token = settings.authToken ?? null;
+  const user = settings.user ?? null;
 
   const sendToken = React.useCallback(() => {
-    const win = ref.current?.contentWindow;
-    if (!win) return;
-    win.postMessage(
-      {
-        type: "ENIGMA_TOKEN",
-        token: settings.authToken ?? null,
-        user: settings.user ?? null,
-      },
-      APP_ORIGIN,
-    );
-  }, [settings.authToken, settings.user]);
+    const win = appWindowRef.current;
+    if (!win) return; // wait for the handshake before sending anything
+    win.postMessage({ type: "ENIGMA_TOKEN", token, user }, APP_ORIGIN);
+  }, [token, user]);
 
   React.useEffect(() => {
-    // The app posts ENIGMA_APP_READY once mounted; reply with the token.
     function onMsg(ev: MessageEvent) {
       if (ev.origin !== APP_ORIGIN) return;
       if ((ev.data as { type?: string } | null)?.type === "ENIGMA_APP_READY") {
+        // ev.source is the app window, definitively at APP_ORIGIN — safe target.
+        appWindowRef.current = ev.source as Window | null;
         sendToken();
       }
     }
@@ -43,17 +48,16 @@ export function HostedGoals({ settings }: { settings: ExtensionSettings }) {
     return () => window.removeEventListener("message", onMsg);
   }, [sendToken]);
 
-  // Re-send whenever the token changes (e.g. after sign-in).
+  // Re-send whenever the token changes (e.g. after sign-in). No-op until the
+  // app has handshaked (appWindowRef is null → sendToken returns early).
   React.useEffect(() => {
     sendToken();
   }, [sendToken]);
 
   return (
     <iframe
-      ref={ref}
       src={APP_URL}
       title="ENIGMA Goals"
-      onLoad={sendToken}
       style={{
         width: "100%",
         height: 420,
