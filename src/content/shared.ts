@@ -124,54 +124,40 @@ function memSaveState(fab: HTMLElement, collapsed: boolean): void {
   }
 }
 
-// Drag the whole pill anywhere on screen; a < 5px move counts as a click, not a drag.
+// Drag the whole pill anywhere; a < 5px move counts as a click, not a drag.
+// NB: no setPointerCapture — it would redirect the child buttons' click events
+// to the wrapper, breaking the insert + collapse actions. We track the move on
+// window and use `memDragged` to suppress the click that follows a real drag.
 function memMakeDraggable(fab: HTMLElement): void {
-  let sx = 0,
-    sy = 0,
-    ox = 0,
-    oy = 0,
-    dragging = false;
   fab.addEventListener("pointerdown", (e) => {
     if (e.button !== 0) return;
     const r = fab.getBoundingClientRect();
-    ox = r.left;
-    oy = r.top;
-    sx = e.clientX;
-    sy = e.clientY;
-    dragging = true;
+    const ox = r.left;
+    const oy = r.top;
+    const sx = e.clientX;
+    const sy = e.clientY;
     memDragged = false;
-    try {
-      fab.setPointerCapture(e.pointerId);
-    } catch {
-      /* ignore */
-    }
+    const move = (ev: PointerEvent): void => {
+      const dx = ev.clientX - sx;
+      const dy = ev.clientY - sy;
+      if (!memDragged && Math.hypot(dx, dy) < 5) return;
+      memDragged = true;
+      fab.classList.add("moved");
+      const left = Math.max(0, Math.min(window.innerWidth - fab.offsetWidth, ox + dx));
+      const top = Math.max(0, Math.min(window.innerHeight - fab.offsetHeight, oy + dy));
+      fab.style.left = `${left}px`;
+      fab.style.top = `${top}px`;
+      fab.style.right = "auto";
+      fab.style.transform = "none";
+    };
+    const up = (): void => {
+      window.removeEventListener("pointermove", move, true);
+      window.removeEventListener("pointerup", up, true);
+      if (memDragged) memSaveState(fab, fab.classList.contains("collapsed"));
+    };
+    window.addEventListener("pointermove", move, true);
+    window.addEventListener("pointerup", up, true);
   });
-  fab.addEventListener("pointermove", (e) => {
-    if (!dragging) return;
-    const dx = e.clientX - sx;
-    const dy = e.clientY - sy;
-    if (!memDragged && Math.hypot(dx, dy) < 5) return;
-    memDragged = true;
-    fab.classList.add("moved");
-    const left = Math.max(0, Math.min(window.innerWidth - fab.offsetWidth, ox + dx));
-    const top = Math.max(0, Math.min(window.innerHeight - fab.offsetHeight, oy + dy));
-    fab.style.left = `${left}px`;
-    fab.style.top = `${top}px`;
-    fab.style.right = "auto";
-    fab.style.transform = "none";
-  });
-  const end = (e: PointerEvent): void => {
-    if (!dragging) return;
-    dragging = false;
-    try {
-      fab.releasePointerCapture(e.pointerId);
-    } catch {
-      /* ignore */
-    }
-    if (memDragged) memSaveState(fab, fab.classList.contains("collapsed"));
-  };
-  fab.addEventListener("pointerup", end);
-  fab.addEventListener("pointercancel", end);
 }
 
 function ensureMemoryButton(): HTMLDivElement {
