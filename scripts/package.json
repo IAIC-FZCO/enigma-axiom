@@ -1,0 +1,14 @@
+{
+  "name": "enigma-icon-gen",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Build-time tool: render the ENIGMA SVG brand mark to extension PNG icons.",
+  "scripts": {
+    "icons": "node generate-icons.mjs"
+  },
+  "dependencies": {
+    "png-to-ico": "^3.0.1",
+    "sharp": "^0.33.5"
+  }
+}

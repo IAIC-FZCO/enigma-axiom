@@ -1,0 +1,60 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- dark premium background (warm near-black, matches premium #1a1308) -->
+    <linearGradient id="bg" x1="20" y1="12" x2="112" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#221A0C"/>
+      <stop offset="0.5" stop-color="#120E08"/>
+      <stop offset="1" stop-color="#050402"/>
+    </linearGradient>
+    <!-- metallic gold, polished banding (premium-badge family) -->
+    <linearGradient id="gold" x1="38" y1="24" x2="92" y2="106" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FCE9A6"/>
+      <stop offset="0.30" stop-color="#E6C569"/>
+      <stop offset="0.52" stop-color="#D9B658"/>
+      <stop offset="0.74" stop-color="#B8923C"/>
+      <stop offset="1" stop-color="#7E6220"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.47" r="0.54">
+      <stop offset="0" stop-color="#E6C569" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#E6C569" stop-opacity="0"/>
+    </radialGradient>
+    <!-- bevel sheen: bright top grade -> transparent -> dark bottom -->
+    <linearGradient id="sheen" x1="0" y1="25" x2="0" y2="103" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.62"/>
+      <stop offset="0.15" stop-color="#FFF6D8" stop-opacity="0.28"/>
+      <stop offset="0.44" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="0.82" stop-color="#2E2208" stop-opacity="0"/>
+      <stop offset="1" stop-color="#241B05" stop-opacity="0.50"/>
+    </linearGradient>
+    <clipPath id="eclip">
+      <rect x="31" y="27" width="21" height="74" rx="7"/>
+      <rect x="31" y="27" width="66" height="20" rx="7"/>
+      <rect x="31" y="54" width="52" height="19" rx="7"/>
+      <rect x="31" y="81" width="66" height="20" rx="7"/>
+    </clipPath>
+    <filter id="eglow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.6" flood-color="#F6DC8A" flood-opacity="0.42"/>
+    </filter>
+  </defs>
+
+  <!-- squircle tile (dark) -->
+  <rect x="6" y="6" width="116" height="116" rx="31" fill="url(#bg)"/>
+  <rect x="6" y="6" width="116" height="116" rx="31" fill="url(#glow)"/>
+  <rect x="7" y="7" width="114" height="114" rx="30" fill="none" stroke="#C9A84C" stroke-opacity="0.55" stroke-width="1.5"/>
+
+  <!-- base gold E (bigger) -->
+  <g fill="url(#gold)" filter="url(#eglow)">
+    <rect x="31" y="27" width="21" height="74" rx="7"/>
+    <rect x="31" y="27" width="66" height="20" rx="7"/>
+    <rect x="31" y="54" width="52" height="19" rx="7"/>
+    <rect x="31" y="81" width="66" height="20" rx="7"/>
+  </g>
+
+  <!-- metallic bevel: sheen + bright top fascia, clipped to the E -->
+  <g clip-path="url(#eclip)">
+    <rect x="6" y="6" width="116" height="116" fill="url(#sheen)"/>
+    <rect x="31" y="27" width="66" height="3.4" rx="1.7" fill="#FFF7DA" fill-opacity="0.80"/>
+    <rect x="31" y="54" width="52" height="2.6" rx="1.3" fill="#FFF3C8" fill-opacity="0.55"/>
+    <rect x="31" y="81" width="66" height="2.6" rx="1.3" fill="#FFF3C8" fill-opacity="0.55"/>
+  </g>
+</svg>
