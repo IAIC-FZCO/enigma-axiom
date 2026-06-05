@@ -394,7 +394,7 @@ export function MainPanel({ settings, onSettingsChange }: Props) {
           </a>
           {" · "}
           <a
-            href="https://github.com/iaic-fzco/enigma-verify"
+            href="https://github.com/iaic-fzco/enigma-axiom"
             target="_blank"
             rel="noopener noreferrer"
             className="text-purple-600 underline"

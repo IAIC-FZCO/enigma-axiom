@@ -14,7 +14,7 @@ Website: https://axiom.enigma.ist · Privacy: https://axiom.enigma.ist/privacy
 This repository contains the **source of the browser extension** (the client). Verification runs against the hosted API at `api.enigma.ist`.
 
 ## Supported sites
-ChatGPT (chatgpt.com, chat.openai.com), Claude (claude.ai), Gemini (gemini.google.com), Deepseek (chat.deepseek.com).
+ChatGPT (chatgpt.com, chat.openai.com), Claude (claude.ai), Gemini (gemini.google.com), Deepseek (chat.deepseek.com). More AI surfaces are added inductively.
 
 ## Build from source
 Requirements: Node.js >= 20.
@@ -29,7 +29,7 @@ Load it in Chrome: open `chrome://extensions` -> enable **Developer mode** -> **
 ## Permissions
 - `storage` — save your settings locally.
 - `activeTab` — act on the AI answer in the tab you are viewing.
-- host access to the four AI sites above (read the visible answer to find citations) + `api.enigma.ist` (verification) + `enigma.ist` (sign-in).
+- host access to the supported AI sites (read the visible answer to find citations) + `api.enigma.ist` (verification) + `enigma.ist` (sign-in).
 
 The extension reads only the visible answer text on the supported sites and sends only the specific claim or citation you choose to verify. Nothing is auto-sent or rewritten.
 

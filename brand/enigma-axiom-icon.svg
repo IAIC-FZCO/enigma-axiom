@@ -1,0 +1,33 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="20" y1="12" x2="112" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#13131f"/>
+      <stop offset="0.55" stop-color="#0b0b12"/>
+      <stop offset="1" stop-color="#060609"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.4" r="0.62">
+      <stop offset="0" stop-color="#7c6fe0" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#7c6fe0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ink" x1="34" y1="27" x2="97" y2="101" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#dcd6ff"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+    <filter id="eglow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.8" flood-color="#7c6fe0" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+  <rect x="6" y="6" width="116" height="116" rx="31" fill="url(#bg)"/>
+  <rect x="6" y="6" width="116" height="116" rx="31" fill="url(#glow)"/>
+  <circle cx="30" cy="26" r="1.5" fill="#ffffff" opacity="0.6"/>
+  <circle cx="100" cy="34" r="1.2" fill="#a78bfa" opacity="0.7"/>
+  <circle cx="96" cy="99" r="1.2" fill="#ffffff" opacity="0.5"/>
+  <rect x="7" y="7" width="114" height="114" rx="30" fill="none" stroke="#a78bfa" stroke-opacity="0.5" stroke-width="1.5"/>
+  <g fill="url(#ink)" filter="url(#eglow)">
+    <rect x="34" y="27" width="21" height="74" rx="7"/>
+    <rect x="34" y="27" width="63" height="20" rx="7"/>
+    <rect x="34" y="54" width="50" height="19" rx="7"/>
+    <rect x="34" y="81" width="63" height="20" rx="7"/>
+  </g>
+</svg>
